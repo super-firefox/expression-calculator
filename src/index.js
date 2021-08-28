@@ -28,22 +28,22 @@ class Calculator {
         let result = []
         for(let item of array){
             if(['+', '-', '*', '/', '(', ')'].includes(item)){
-                if(acum !== ''){
-                    //! fix minus operator
-                    if(result.slice(-1)[0] === '-'){
-                        result.pop();
-                        result.push('+')
-                        result.push(-1 * acum);
-                    } else {
-                        result.push(+acum)
-                    }
-                }
-                result.push(item);
-                acum = '';
-                // ------------------
-                    // if (acum !== '') result.push(+acum);
+                    // if(acum !== ''){
+                    //     //! fix minus operator
+                    //     if(result.slice(-1)[0] === '-'){
+                    //         result.pop();
+                    //         result.push('+')
+                    //         result.push(-1 * acum);
+                    //     } else {
+                    //         result.push(+acum)
+                    //     }
+                    // }
                     // result.push(item);
                     // acum = '';
+                // ------------------
+                    if (acum !== '') result.push(+acum);
+                    result.push(item);
+                    acum = '';
                 //-------------------
             } else {
                 acum += item;
@@ -82,7 +82,6 @@ class Calculator {
                 if(b === 0){
                     throw new Error('TypeError: Division by zero.');
                 }
-                // console.log(parseFloat((a / b).toFixed(4)));
                 return a / b;
         }
     }
@@ -90,7 +89,6 @@ class Calculator {
     calc() {
         let expArr = this.createArrayExpr();
         let notation = this.shutingYard(expArr);
-        // console.log(notation); 
         let indexOperator;
         let a, b, operator;
         while(notation.length != 1){
@@ -98,11 +96,7 @@ class Calculator {
             a = notation[indexOperator-2];
             b = notation[indexOperator-1];
             operator = notation[indexOperator];
-            // console.log(this.action(a, b, operator))
-            // console.log(notation[indexOperator+1] === '-')
-            // if(notation[indexOperator+1] === '-') operator = '+'
             notation.splice(indexOperator-2, 3, this.action(a, b, operator));
-            // console.log(notation); 
         }
         return notation[0];
     }
@@ -135,6 +129,9 @@ class Calculator {
                     stack.push(elem);
                 } else {
                     notation.push(stack.pop());
+                    while(stack.length != 0 && this.getPriorityOPerator(stack[stack.length-1]) === this.getPriorityOPerator(elem)){
+                        notation.push(stack.pop());
+                    }
                     stack.push(elem);
                 }
             }
